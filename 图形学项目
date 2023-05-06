@@ -1,0 +1,336 @@
+#include<stdio.h>
+#include<iostream>
+#include<math.h>
+#include<glut.h>
+
+using namespace std;
+
+void DDA(int x0, int y0, int xE, int yE);
+void ChangeSize(GLsizei w, GLsizei h);
+void Display(void);
+void Point(int x, int y);
+
+void DDA(int x0, int y0, int xE, int yE)
+{
+    
+    int dx = xE - x0, dy = yE - y0, ep, i;
+
+    float xN = x0, yN = y0, xAdd, yAdd;
+    if (abs(dx) > abs(dy))
+        ep = abs(dx);
+    else
+        ep = abs(dy);
+    xAdd = float(dx) / float(ep);
+    yAdd = float(dy) / float(ep);
+    for (i = 0; i <= ep; i++)
+    {
+        Point(int(xN + 0.5), int(yN + 0.5));
+        xN += xAdd;
+        yN += yAdd;
+    };
+} 
+
+void midPoint_Line0(int x0, int y0, int x1, int y1 )//k=0~1
+{
+    glPushMatrix();
+    int a, b, d1, d2, d0, x, y;
+    a = y0 - y1;
+    b = x1 - x0;
+    d0 = a + a + b;
+    d1 = a + a;
+    d2 = a + a + b + b;
+    x = x0;
+    y = y0;
+
+    Point(x, y);
+
+    while (x<x1)
+    {
+        if (d0 < 0)
+        {
+            x++;
+            y++;
+            d0 += d2;
+        }
+        else
+        {
+            x++;
+            d0 += d1;
+        }
+        Point(x, y);
+
+    }
+    glEnd();
+    glPopMatrix();
+
+}
+
+void midPoint_Line1(int x0, int y0, int x1, int y1)//k>1
+{
+    int a, b, d1, d2, d0, x, y;
+    a = y0 - y1;
+    b = x1 - x0;
+    d0 = a + b + b;
+    d1 = a + a + b + b;
+    d2 = b + b;
+    x = x0;
+    y = y0;
+    Point(x, y);
+    while (y < y1)
+    {
+        if (d0 < 0)
+        {
+            y++;
+            d0 += d2;
+        }
+        else
+        {
+            y++;
+            x++;
+            d0 += d1;
+        }
+        Point(x, y);
+    }
+    glEnd();
+    glPopMatrix();
+}
+
+void midPoint_Line2(int x0, int y0, int x1, int y1)//k=0~-1
+{
+    int a, b, d1, d2, d0, x, y;
+    a = y0 - y1;
+    b = x1 - x0;
+    d0 = 2 * a - b;
+    d1 = 2 * a - 2 * b;
+    d2 = 2 * a;
+    x = x0;
+    y = y0;
+    Point(x, y);
+    while (x < x1)
+    {
+        if (d0 < 0)
+        {
+            x++;
+            d0 += d2;
+        }
+        else
+        {
+            x++;
+            y--;
+            d0 += 1;
+        }
+        Point(x, y);
+
+    }
+    glEnd();
+    glPopMatrix();
+}
+
+void midPoint_Line3(int x0, int y0, int x1, int y1)//k<-1
+{
+    int a, b, d1, d2, d0, x, y;
+    a = y0 - y1;
+    b = x1 - x0;
+    d0 = a - 2 * b;
+    d1 = -2 * b;
+    d2 = 2 * (a - b);
+    x = x0;
+    y = y0;
+    Point(x, y);
+    while (y > y1)
+    {
+        if (d0 < 0)
+        {
+            x++;
+            y--;
+            d0 += d2;
+        }
+        else
+        {
+            y--;
+            d0 += d1;
+        }
+        Point(x, y);
+    }
+    glEnd();
+    glPopMatrix();
+}
+
+void Display(void)
+{
+
+        glClearColor(1, 1, 1, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        midPoint_Line0(-35, 180, 35, 180);
+        midPoint_Line2(35, 180, 55, 160);
+        midPoint_Line1(45, 55, 55, 160);
+        midPoint_Line3(25, 150, 45, 55);
+        midPoint_Line2(-25, 150, 25, 150);
+        midPoint_Line1(-45, 55, -25, 150);
+        midPoint_Line3(-55, 160, -45, 55);
+        midPoint_Line0(-55, 160, -35, 180);
+        midPoint_Line0(-35, 95, 35, 95);
+        midPoint_Line1(-80, 90, -55, 160);
+        midPoint_Line3(55, 160, 80, 90);
+
+        DDA(-25, 50, 25, 50);
+        DDA(25, 50, 85, -10);
+        DDA(5, -45, 85, -10);
+        DDA(-5, -45, 5, -45);
+        DDA(-85, -10, -5, -45);
+        DDA(-85, -10, -25, 50);
+        DDA(85, -10, 210, 165);
+        DDA(210, 175, 210, 165);
+        DDA(195, 180, 210, 175);
+        DDA(40, 40, 195, 180);
+        DDA(60, 15, 205, 175);
+        DDA(-210, 165, -85, -10);
+        DDA(-210, 175, -210, 165);
+        DDA(-210, 175, -195, 180);
+        DDA(-195, 180, -40, 40);
+        DDA(-205, 175, -60, 15);
+
+        DDA(-145, 45, -125, 75);
+        DDA(125, 75, 145, 45);
+        DDA(-150, 55, -140, 55);
+        DDA(140, 55, 150, 55);
+        DDA(-175, 50, -150, 55);
+        DDA(150, 55, 175, 50);
+        DDA(-195, 15, -175, 50);
+        DDA(175, 50, 195, 15);
+        DDA(-195, 15, -195, 0);
+        DDA(195, 0, 195, 15);
+        DDA(-195, 0, -175, -125);
+        DDA(175, -125, 195, 0);
+        DDA(-175, -125, -155, -140);
+        DDA(155, -140, 175, -125);
+        DDA(-155, -140, -130, -150);
+        DDA(130, -150, 155, -140);
+        DDA(-130, -150, -60, -200);
+        DDA(60, -200, 130, -150);
+        DDA(-85, -95, -60, -200);
+        DDA(60, -200, 85, -95);
+        DDA(-100, -70, -85, -95);
+        DDA(85, -95, 100, -70);
+        DDA(-100, -25, -100, -70);
+        DDA(100, -25, 100, -70);
+        DDA(-110, -10, -110, -20);
+        DDA(110, -20, 110, -10);
+        DDA(-125, 0, -110, -10);
+        DDA(110, -10, 125, 0);
+        DDA(-125, 15, -125, 0);
+        DDA(125, 15, 125, 0);
+        DDA(-145, 45, -125, 15);
+        DDA(125, 15, 145, 45);
+
+        DDA(-180, -5, -140, -5);
+        DDA(140, -5, 180, -5);
+        DDA(-180, -5, -165, -105);
+        DDA(165, -105, 180, -5);
+        DDA(-165, -105, -160, -115);
+        DDA(160, -115, 165, -105);
+        DDA(-160, -115, -125, -135);
+        DDA(125, -135, 160, -115);
+        DDA(-145, -105, -125, -135);
+        DDA(125, -135, 145, -105);
+        DDA(-165, -105, -145, -105);
+        DDA(145, -105, 165, -105);
+        DDA(-145, -20, -145, -95);
+        DDA(145, -20, 145, -95);
+        DDA(-170, -55, -130, -75);
+        DDA(130, -75, 170, -55);
+        DDA(-145, -5, -145, -35);
+        DDA(145, -5, 145, -35);
+        DDA(-145, -35, -135, 0);
+        DDA(135, 0, 145, -35);
+
+        DDA(-90, -40, -25, -60);
+        DDA(25, -60, 90, -40);
+        DDA(-25, -75, -25, -60);
+        DDA(25, -75, 25, -60);
+        DDA(-25, -75, -65, -80);
+        DDA(25, -75, 65, -80);
+        DDA(-90, -60, -65, -80);
+        DDA(65, -80, 90, -60);
+        DDA(-90, -60, -90, -40);
+        DDA(90, -60, 90, -40);
+        DDA(-100, -65, -90, -60);
+        DDA(90, -60, 100, -65);
+        DDA(0, -75, 0, -85);
+        DDA(-25, -75, -15, -70);
+        DDA(15, -70, 25, -75);
+        DDA(-15, -75, 15, -75);
+        DDA(-60, -80, -55, -100);
+        DDA(55, -100, 60, -80);
+        DDA(-95, -80, -55, -100);
+        DDA(55, -100, 95, -80);
+        DDA(-55, -100, -10, -85);
+        DDA(10, -85, 55, -100);
+        DDA(-10, -85, 10, -85);
+        DDA(-20, -115, -10, -105);
+        DDA(10, -105, 20, -115);
+        DDA(-10, -105, 10, -105);
+        DDA(-20, -130, -10, -120);
+        DDA(10, -120, 20, -130);
+        DDA(-10, -120, 10, -120);
+        DDA(-65, -165, -40, -200);
+        DDA(40, -200, 65, -165);
+        DDA(-40, -200, -20, -150);
+        DDA(20, -150, 40, -200);
+        DDA(-20, -150, 20, -150);
+        DDA(-15, -160, 15, -160);
+        DDA(-20, -185, -15, -160);
+        DDA(15, -160, 20, -185);
+        DDA(-20, -185, -15, -230);
+        DDA(15, -230, 20, -185);
+        DDA(-15, -230, 15, -230);
+        DDA(-30, -185, -20, -185);
+        DDA(20, -185, 30, -185);
+        glFlush();
+  
+}
+
+void Point(int x, int y)
+{
+    glPointSize(8.0f);
+    glColor4f(0, 0, 0, 0);
+    glBegin(GL_POINTS);
+    glVertex2i(x, y);
+    glEnd();
+    glFlush();
+}
+
+void ChangeSize(GLsizei w, GLsizei h)
+{
+    GLfloat aspectRatio;
+    GLfloat nRange = 400.0f;
+    if (h == 0)
+        h = 1;
+    glViewport(0, 0, w, h);
+    aspectRatio = (GLfloat)w / (GLfloat)h;
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    if (w <= h)
+        glOrtho(-nRange, nRange, -nRange * h / w, nRange * h / w, -nRange * 5.0f, nRange * 5.0f);
+    else
+        glOrtho(-nRange * w / h, nRange * w / h, -nRange, nRange, -nRange * 5.0f, nRange * 5.0f);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+int main(int argc, char* argv[])
+{
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
+    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(600, 600);
+    glutCreateWindow("CBZ");
+    glutReshapeFunc(ChangeSize);
+    glutDisplayFunc(&Display);
+    glutMainLoop();
+    return 0;
+}
